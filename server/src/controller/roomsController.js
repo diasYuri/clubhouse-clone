@@ -1,4 +1,5 @@
 import Attendee from "../entities/attendee.js"
+import Room from "../entities/room.js"
 import { constants } from "../util/constants.js"
 
 export default class RoomsController{
@@ -24,7 +25,20 @@ export default class RoomsController{
     socket.emit(constants.event.USER_CONNECTED, updatedUserData)
   }
 
-  
+  #joinUserRoom(socket, user, room) {
+    const roomId = room.id
+    const existingRoom = this.rooms.has(roomId)
+    const currentRoom = existingRoom ? this.rooms.get(roomId) : {}
+
+    const currentUser = new Attendee({
+      ...user,
+      roomId
+    })
+
+    //Definir dono da sala 
+
+
+  }
 
   #updateGlobalUserData(userId, userData = {}, roomId = '') {
     const users = this.#users
