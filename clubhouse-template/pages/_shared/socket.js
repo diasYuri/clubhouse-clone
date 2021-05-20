@@ -1,36 +1,37 @@
-import { constants } from "./constants"
+  
+import { constants } from "./constants.js"
 
 
+export default class SocketBuilder {
+    constructor({ socketUrl, namespace }) {
+        this.socketUrl = `${socketUrl}/${namespace}`
 
-export default class SocketBuilder{
+        this.onUserConnected = () => { }
+        this.onUserDisconnected = () => { }
+    }
 
-  constructor({socketUrl, namespace}) {
-    this.socketUrl = `${socketUrl}/${namespace}`
-    this.onUserConnected = () => { }
-    this.onUserDisconnected = () => {}
-  }
+    setOnUserConnected(fn) {
+        this.onUserConnected = fn
 
-  setOnUserConnected(fn) {
-    this.onUserConnected = fn
-    return this
-  }
+        return this
+    }
 
-  setOnUserDisconnected(fn) {
-    this.onUserConnected = fn
-    return this
-  }
+    setOnUserDisconnected(fn) {
+        this.onUserDisconnected = fn
 
-  build() {
-    const socket = globalThis.io.connect(this.socketUrl, {
-      withCredentials: false
-    })
+        return this
+    }
 
+    build() {
+        const socket = globalThis.io.connect(this.socketUrl, {
+            withCredentials: false
+        })
 
-    socket.on('Connection', () => console.log())
-    socket.on(constants.events.USER_CONNECTED, this.onUserConnected())
-    socket.on(constants.events.USER_DISCONNECTED, this.onUserDisconnected())
+        socket.on('connection', () => console.log('conectei!'))
 
-    return socket
-  }
+        socket.on(constants.events.USER_CONNECTED, this.onUserConnected)
+        socket.on(constants.events.USER_DISCONNECTED, this.onUserDisconnected)
 
+        return socket
+    }
 }
