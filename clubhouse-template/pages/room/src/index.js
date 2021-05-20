@@ -14,14 +14,14 @@ const socket = socketBuilder
 
   
   const room = {
-    id: Date.now(),
+    id: "001",
     topic: 'JS Expert'
   }
   
   
   const user = {
     img: 'https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/bear_russian_animal_avatar-256.png',
-    username: 'Yuri Dias'
+    username: 'Yuri '+ Date.now()
   }
 
 socket.emit(constants.events.JOIN_ROOM, {user, room})

@@ -1,4 +1,4 @@
-import Attendee from "./attendee"
+import Attendee from "./attendee.js"
 
 export default class Room{
   constructor

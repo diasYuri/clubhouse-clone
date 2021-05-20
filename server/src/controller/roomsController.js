@@ -21,8 +21,20 @@ export default class RoomsController{
     const roomId = room.id
 
     const updatedUserData = this.#updateGlobalUserData(userId, user, roomId)
-    console.log(updatedUserData)
-    socket.emit(constants.event.USER_CONNECTED, updatedUserData)
+    
+    
+    const updatedRoom = this.#joinUserRoom(socket, updatedUserData, room)
+    
+    this.#notifyUsersOnRoom(socket, roomId, updatedUserData)
+  }
+
+  #replyWithActiveUsers(socket, users) {
+    const event = 
+  }
+
+  #notifyUsersOnRoom(socket, roomId, user) {
+    const event = constants.event.USER_CONNECTED
+    socket.to(roomId).emit(event, user)
   }
 
   #joinUserRoom(socket, user, room) {
@@ -36,8 +48,38 @@ export default class RoomsController{
     })
 
     //Definir dono da sala 
+    const [owner, users] = existingRoom ?
+      [currentRoom.owner, currentRoom.users] :
+      [currentUser, new Set()]
+
+    
+    const updatedRoom = this.#mapRoom({
+      ...currentRoom,
+      ...room,
+      owner,
+      users: new Set([...users, ...[currentUser]])
+    })
+
+    this.rooms.set(roomId, updatedRoom)
+    
+    socket.join(roomId)
+
+    return this.rooms.get(roomId)
+  }
 
 
+  #mapRoom(room) {
+    const users = [...room.users.values()]
+    const speakersCount = users.filter(user => user.isSpeaker).length
+    const featuredAttendees = users.slice(0, 3)
+    const mapperRoom = new Room({
+      ...room,
+      speakersCount,
+      featuredAttendees,
+      attendeesCount: room.users.size
+    })
+
+    return mapperRoom
   }
 
   #updateGlobalUserData(userId, userData = {}, roomId = '') {
